@@ -1,0 +1,37 @@
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: download libselinux-python package
+      shell: cd ~ && curl -O http://mirror.centos.org/centos/7/os/x86_64/Packages/libselinux-python-2.5-12.el7.x86_64.rpm 
+      ignore_errors: yes
+
+    - name: install libselinux-python package
+      shell: cd ~ && rpm -ivh libselinux-python-2.5-12.el7.x86_64.rpm && rm -rf libselinux-python-2.5-12.el7.x86_64.rpm
+      ignore_errors: yes
+
+    - name: clear libselinux-python file
+      file:
+        path: /root/.ssh
+        state: absent
+
+    - name: copy publickey to remote host
+      copy: src=/home/thuonghh/.ssh/id_rsa.pub dest=/tmp/id_rsa.pud
+
+    - name: create .ssh directory if it doesn't exist
+      file:
+        path: /root/.ssh
+        state: directory
+        mode: 0755
+
+    - name: create authorized_keys
+      shell: cd ~ && cat /tmp/id_rsa.pud >> /root/.ssh/authorized_keys
+      ignore_errors: yes
+
+    - name: Set authorized key in alternate location
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', '/home/thuonghh/.ssh/id_rsa.pub') }}"
+        path: /root/.ssh/authorized_keys
+        manage_dir: no
