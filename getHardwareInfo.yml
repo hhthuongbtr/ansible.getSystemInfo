@@ -5,4 +5,5 @@
       get_system_info: 
       register: result
 
-    - debug: var=result
+    - name: get hardware info
+      debug: var=result
