@@ -1,5 +1,4 @@
 - hosts: all
-  remote_user: root
   tasks:
     - name: Test that my module works
       get_system_info: 
